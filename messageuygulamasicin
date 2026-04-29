@@ -27,7 +27,7 @@
 
     <script>
         // BURAYI KENDİ TUNNEL LİNKİNLE DEĞİŞTİR
-        const apiBaseUrl = "https://k7m8sjdq-5016.euw.devtunnels.ms/api/mesaj";
+        const apiBaseUrl = "https://lt1vthmf-5016.euw.devtunnels.ms/api/mesaj";
 
         // LİSTELEME (GET)
         async function listele() {
