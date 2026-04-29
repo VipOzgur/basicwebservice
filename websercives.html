@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>.NET Core API Demo</title>
+    <style>
+        body { font-family: sans-serif; max-width: 500px; margin: 20px auto; line-height: 1.6; }
+        input { padding: 8px; width: 70%; }
+        button { padding: 8px; cursor: pointer; background: #0078d4; color: white; border: none; }
+        .item { border-bottom: 1px solid #ddd; padding: 10px; display: flex; justify-content: space-between; }
+        .delete-btn { background: #d83b01; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+    <h2>API Mesaj Panosu</h2>
+    
+    <div>
+        <input type="text" id="dataInput" placeholder="Bir şeyler yazın...">
+        <button onclick="ekle()">Ekle</button>
+    </div>
+
+    <div id="liste" style="margin-top: 20px;">
+        <!-- Veriler buraya gelecek -->
+        Yükleniyor...
+    </div>
+
+    <script>
+        // BURAYI KENDİ TUNNEL LİNKİNLE DEĞİŞTİR
+        const apiBaseUrl = "https://tf7v6rq5-5256.euw.devtunnels.ms/api/home";
+
+        // LİSTELEME (GET)
+        async function listele() {
+            try {
+                const response = await fetch(apiBaseUrl);
+                const veriler = await response.json();
+                console.log(veriler);
+
+                const listeDiv = document.getElementById('liste');
+                listeDiv.innerHTML = veriler.map((item) => `
+                    <div class="item">
+                        <span>${item.data}</span>
+                        <button class="delete-btn" onclick="sil(${item.id})">Sil</button>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error("Hata:", err);
+            }
+        }
+
+        // EKLEME (POST)
+        async function ekle() {
+            const input = document.getElementById('dataInput');
+            const data = input.value;
+            if(!data) return;
+
+            // Senin API'n 'string data' parametresini Query String olarak bekliyor olabilir
+            // Eğer [FromBody] kullanmadıysan URL sonuna eklemek en güvenlisi:
+            await fetch(`${apiBaseUrl}?data=${encodeURIComponent(data)}`, {
+                method: 'POST'
+            });
+
+            input.value = "";
+            listele();
+        }
+
+        // SİLME (DELETE)
+        async function sil(id) {
+            await fetch(`${apiBaseUrl}?id=${id}`, {
+                method: 'DELETE'
+            });
+            listele();
+        }
+
+        // Sayfa açıldığında listele
+        listele();
+        // 5 saniyede bir otomatik güncelle (Eş zamanlılık demosu için)
+        setInterval(listele, 5000);
+    </script>
+</body>
+</html>
